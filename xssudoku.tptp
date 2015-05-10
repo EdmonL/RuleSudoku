@@ -1,0 +1,118 @@
+fof(problem,axiom,(
+    ! [X11,X12,X21,X22] :
+      ( problem(X11,X12,X21,X22)
+    <=> X11 = "1" ) )).
+
+fof(distinct,axiom,(
+    ! [X,Y] :
+      ( distinct(X,Y)
+    <=> ( ( X = "1" | Y = "1" )
+        & ( X = "2" | Y = "2" ) ) ) )).
+
+fof(solution,axiom,(
+    ! [X11,X12,X21,X22] :
+      ( solution(X11,X12,X21,X22)
+    <=> ( problem(X11,X12,X21,X22)
+        & distinct(X11,X12)
+        & distinct(X21,X22)
+        & distinct(X11,X21)
+        & distinct(X12,X22) ) ) )).
+
+%fof(solve,question,(
+%    ? [X11,X12,X21,X22] : solution(X11,X12,X21,X22) )).
+
+fof(solution_uniqueness,axiom,(
+    ( solution_uniqueness
+  <=> ( ! [X11,X12,X21,X22,Y11,Y12,Y21,Y22] :
+          ( ( solution(X11,X12,X21,X22)
+            & solution(Y11,Y12,Y21,Y22) )
+         => ( X11 = Y11
+            & X12 = Y12
+            & X21 = Y21
+            & X22 = Y22 ) ) ) ) )).
+
+%fof(query_solution_uniqueness,conjecture,(
+%    solution_uniqueness )).
+
+fof(unique_solution,axiom,(
+    ! [X11,X12,X21,X22] :
+      ( unique_solution(X11,X12,X21,X22)
+    <=> ( solution(X11,X12,X21,X22)
+        & ! [Y11,Y12,Y21,Y22] :
+            ( ( X11 = Y11
+              & X12 = Y12
+              & X21 = Y21
+              & X22 = Y22 )
+            | ~ solution(Y11,Y12,Y21,Y22) ) ) ) )).
+
+%fof(solve_unique_solution,question,(
+%    ? [X11,X12,X21,X22] : unique_solution(X11,X12,X21,X22) )).
+
+fof(problem_seed,axiom,(
+    ! [X11,X12,X21,X22] :
+      ( problem_seed(X11,X12,X21,X22)
+    <=> ( ( X11 = "blank" | X11 = "1" | X11 = "2" )
+        & ( X12 = "blank" | X12 = "1" | X12 = "2" )
+        & ( X21 = "blank" | X21 = "1" | X21 = "2" )
+        & X22 = "1" ) ) )).
+
+fof(one_more_step,axiom,(
+    ! [X11,X12,X21,X22,Y11,Y12,Y21,Y22] :
+      ( one_more_step(X11,X12,X21,X22,Y11,Y12,Y21,Y22)
+    <=> ( ( X11 != "blank" & Y11 = "blank"
+          & X12 = Y12 & X21 = Y21 & X22 = Y22 )
+        | ( X12 != "blank" & Y12 = "blank"
+          & X11 = Y11 & X21 = Y21 & X22 = Y22 )
+        | ( X21 != "blank" & Y21 = "blank"
+          & X11 = Y11 & X12 = Y12 & X22 = Y22 )
+        | ( X22 != "blank" & Y22 = "blank"
+          & X11 = Y11 & X12 = Y12 & X21 = Y21 ) ) ) )).
+
+fof(best_problem,axiom,(
+    ! [X11,X12,X21,X22] :
+      ( best_problem(X11,X12,X21,X22)
+    <=> ( problem_seed(X11,X12,X21,X22)
+        & has_unique_solution(X11,X12,X21,X22)
+        & ( ! [Y11,Y12,Y21,Y22] :
+	    ( ~ one_more_step(X11,X12,X21,X22,Y11,Y12,Y21,Y22)
+	    | ~ has_unique_solution(Y11,Y12,Y21,Y22) ) ) ) ) )).
+
+fof(is_placement,axiom,(
+    ! [Y11,Y12,Y21,Y22,X11,X12,X21,X22] :
+      ( is_placement(Y11,Y12,Y21,Y22,X11,X12,X21,X22)
+    <=> ( ( ( X11 = "blank" & Y11 != "blank" )
+          | ( X11 != "blank" & X11 = Y11 ) )
+        & ( ( X12 = "blank" & Y12 != "blank" )
+          | ( X12 != "blank" & X12 = Y12 ) )
+        & ( ( X21 = "blank" & Y21 != "blank" )
+          | ( X21 != "blank" & X21 = Y21 ) )
+        & ( ( X22 = "blank" & Y22 != "blank" )
+          | ( X22 != "blank" & X22 = Y22 ) ) ) ) )).
+
+fof(is_solution,axiom,(
+    ! [Y11,Y12,Y21,Y22,X11,X12,X21,X22] :
+      ( is_solution(Y11,Y12,Y21,Y22,X11,X12,X21,X22)
+    <=> ( is_placement(Y11,Y12,Y21,Y22,X11,X12,X21,X22)
+        & distinct(Y11,Y12)
+        & distinct(Y21,Y22)
+        & distinct(Y11,Y21)
+        & distinct(Y12,Y22) ) ) )).
+
+fof(has_unique_solution,axiom,(
+    ! [X11,X12,X21,X22] :
+      ( has_unique_solution(X11,X12,X21,X22)
+    <=> ( ? [Y11,Y12,Y21,Y22] :
+            ( is_solution(Y11,Y12,Y21,Y22,X11,X12,X21,X22)
+	    & ( ! [Z11,Z12,Z21,Z22] :
+	          ( ( Z11 = Y11 & Z12 = Y12 & Z21 = Y21 & Z22 = Y22 )
+		  | ~ is_solution(Z11,Z12,Z21,Z22,X11,X12,X21,X22) ) ) ) ) ) )).
+
+%fof(test,question,(
+%    ? [X11,X12,X21,X22] : is_solution(X11,X12,X21,X22,"1","blank","blank","blank") )).
+
+%fof(if_has_unique_solution,conjecture,(
+%    has_unique_solution("1","blank","blank","blank") )).
+
+fof(query_best_problem,question,(
+    ? [X11,X12,X21,X22] : best_problem(X11,X12,X21,X22) )).
+
