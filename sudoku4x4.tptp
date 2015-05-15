@@ -1,0 +1,101 @@
+fof(problem,axiom,(
+    ![    X12,X13,X14,
+      X21,X22,X23,X24,
+      X31,    X33,X34,
+      X41,X42,X43    ] : problem("1",X12,X13,X14,
+                                 X21,X22,X23,X24,
+                                 X31,"2",X33,X34,
+                                 X41,X42,X43,"4") )).
+
+fof(solutionSequence,axiom,(
+    ! [X1,X2,X3,X4] :
+      ( isSolutionSequence(X1,X2,X3,X4)
+    <=> ( ( X1 = "1" | X2 = "1" | X3 = "1" | X4 = "1" )
+        & ( X1 = "2" | X2 = "2" | X3 = "2" | X4 = "2" )
+        & ( X1 = "3" | X2 = "3" | X3 = "3" | X4 = "3" )
+        & ( X1 = "4" | X2 = "4" | X3 = "4" | X4 = "4" ) ) ) )).
+
+
+fof(solution,axiom,(
+    ! [X11,X12,X13,X14,
+       X21,X22,X23,X24,
+       X31,X32,X33,X34,
+       X41,X42,X43,X44] :
+      ( isSolution(X11,X12,X13,X14,
+                   X21,X22,X23,X24,
+                   X31,X32,X33,X34,
+                   X41,X42,X43,X44)
+    <=> ( isSolutionSequence(X11,X12,X13,X14)
+        & isSolutionSequence(X21,X22,X23,X24)
+        & isSolutionSequence(X31,X32,X33,X34)
+        & isSolutionSequence(X41,X42,X43,X44)
+        & isSolutionSequence(X11,X21,X31,X41)
+        & isSolutionSequence(X12,X22,X32,X42)
+        & isSolutionSequence(X13,X23,X33,X43)
+        & isSolutionSequence(X14,X24,X34,X44)
+        & isSolutionSequence(X11,X12,X21,X22)
+        & isSolutionSequence(X13,X14,X23,X24)
+        & isSolutionSequence(X31,X32,X41,X42)
+        & isSolutionSequence(X33,X34,X43,X44) ) ) )).
+
+%fof(querySolution,question,(
+%    ? [X11,X12,X13,X14,
+%       X21,X22,X23,X24,
+%       X31,X32,X33,X34,
+%       X41,X42,X43,X44] : ( problem(X11,X12,X13,X14,
+%                                    X21,X22,X23,X24,
+%                                    X31,X32,X33,X34,
+%                                    X41,X42,X43,X44)
+%                          & isSolution(X11,X12,X13,X14,
+%                                       X21,X22,X23,X24,
+%                                       X31,X32,X33,X34,
+%                                       X41,X42,X43,X44) ) )).
+
+fof(not_problem,axiom,(
+    ! [X11,X12,X13,X14, X21,X22,X23,X24, X31,X32,X33,X34, X41,X42,X43,X44] :
+      ( not_problem(X11,X12,X13,X14, X21,X22,X23,X24, X31,X32,X33,X34, X41,X42,X43,X44)
+    <=> ( X11 != "1" | X31 != "2" | X44 != "4" ) ) )).
+
+fof(queryUniqueSolution,question,(
+    ? [X11,X12,X13,X14, X21,X22,X23,X24, X31,X32,X33,X34, X41,X42,X43,X44] :
+      ( problem(X11,X12,X13,X14, X21,X22,X23,X24, X31,X32,X33,X34, X41,X42,X43,X44)
+      & isSolution(X11,X12,X13,X14, X21,X22,X23,X24, X31,X32,X33,X34, X41,X42,X43,X44)
+      & ( ! [Y11,Y12,Y13,Y14, Y21,Y22,Y23,Y24, Y31,Y32,Y33,Y34, Y41,Y42,Y43,Y44] :
+            ( ( X11 = Y11 & X12 = Y12 & X13 = Y13 & X14 = Y14
+              & X21 = Y21 & X22 = Y22 & X23 = Y23 & X24 = Y24
+              & X31 = Y31 & X32 = Y32 & X33 = Y33 & X34 = Y34
+              & X41 = Y41 & X42 = Y42 & X43 = Y43 & X44 = Y44 )
+            | not_problem(Y11,Y12,Y13,Y14, Y21,Y22,Y23,Y24, Y31,Y32,Y33,Y34, Y41,Y42,Y43,Y44)
+            | ~ isSolution(Y11,Y12,Y13,Y14, Y21,Y22,Y23,Y24, Y31,Y32,Y33,Y34, Y41,Y42,Y43,Y44) ) ) ) )).
+
+%fof(querySolutionUniqueness,conjecture,(
+%    ! [X11,X12,X13,X14,
+%       X21,X22,X23,X24,
+%       X31,X32,X33,X34,
+%       X41,X42,X43,X44,
+%
+%       Y11,Y12,Y13,Y14,
+%       Y21,Y22,Y23,Y24,
+%       Y31,Y32,Y33,Y34,
+%       Y41,Y42,Y43,Y44] :
+%      ( ( problem(X11,X12,X13,X14,
+%                  X21,X22,X23,X24,
+%                  X31,X32,X33,X34,
+%                  X41,X42,X43,X44)
+%        & problem(Y11,Y12,Y13,Y14,
+%                  Y21,Y22,Y23,Y24,
+%                  Y31,Y32,Y33,Y34,
+%                  Y41,Y42,Y43,Y44)
+%        & isSolution(X11,X12,X13,X14,
+%                     X21,X22,X23,X24,
+%                     X31,X32,X33,X34,
+%                     X41,X42,X43,X44)
+%        & isSolution(Y11,Y12,Y13,Y14,
+%                     Y21,Y22,Y23,Y24,
+%                     Y31,Y32,Y33,Y34,
+%                     Y41,Y42,Y43,Y44) )
+%     => ( X11 = Y11 & X12 = Y12 & X13 = Y13 & X14 = Y14
+%        & X21 = Y21 & X22 = Y22 & X23 = Y23 & X24 = Y24
+%        & X31 = Y31 & X32 = Y32 & X33 = Y33 & X34 = Y34
+%        & X41 = Y41 & X42 = Y42 & X43 = Y43 & X44 = Y44 ) ) )).
+%        

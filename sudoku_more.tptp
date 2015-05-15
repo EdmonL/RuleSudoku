@@ -1,0 +1,85 @@
+fof(row,axiom,(
+    ! [X,Y,I] :
+      ( contains(row(I),cell(X,Y))
+    <=> I = X )
+)).
+
+fof(col,axiom,(
+    ! [X,Y,I] :
+      ( contains(col(I),cell(X,Y))
+    <=> I = Y )
+)).
+
+fof(block,axiom,(
+    ! [X,Y,Z] :
+      ( contains(block(Z),cell(X,Y))
+    <=> ( ( ( ( Z = "1" | Z = "2" | Z = "3" )
+            & ( X = "1" | X = "2" | X = "3" ) )
+          | ( ( Z = "4" | Z = "5" | Z = "6" )
+            & ( X = "4" | X = "5" | X = "6" ) )
+          | ( ( Z = "7" | Z = "8" | Z = "9" )
+            & ( X = "7" | X = "8" | X = "9" ) ) )
+        & ( ( ( Z = "1" | Z = "4" | Z = "7" )
+            & ( Y = "1" | Y = "2" | Y = "3" ) )
+          | ( ( Z = "2" | Z = "5" | Z = "8" )
+            & ( Y = "4" | Y = "5" | Y = "6" ) )
+          | ( ( Z = "3" | Z = "6" | Z = "9" )
+            & ( Y = "7" | Y = "8" | Y = "9" ) ) ) ) )
+)).
+
+fof(equalCells,axiom,(
+  ! [X,Y,U,V] :
+    ( cell(X,Y) = cell(U,V)
+  <=> ( X = U & Y = V ) )
+)).
+
+fof(equalRows,axiom,(
+  ! [X,Y] :
+    ( row(X) = row(Y)
+  <=> X = Y )
+)).
+
+fof(equalCols,axiom,(
+  ! [X,Y] :
+    ( col(X) = col(Y)
+  <=> X = Y )
+)).
+
+fof(equalBlocks,axiom,(
+  ! [X,Y] :
+    ( block(X) = block(Y)
+  <=> X = Y )
+)).
+
+fof(group,axiom,(
+  ! [C1,C2] :
+    ( belongToSameGroup(C1,C2)
+  <=> ( ? [G] : ( contains(G,C1) & contains(G,C2) ) ) )
+)).
+
+fof(hasNum,axiom,(
+  ! [C,M] :
+    ( hasNum(C,M)
+   => ~ cannotHaveNum(C,M) )
+)).
+
+fof(oneCellHasOneNum,axiom,(
+  ! [C,M,N] :
+    ( ( hasNum(C,M) & M != N )
+   => cannotHaveNum(C,N) )
+)).
+
+fof(basicRule,axiom,(
+    ! [X,Y,N,M] :
+      ( ( hasNum(cell(X,Y),N)
+        & isNum(M)
+        & M != N )
+     => cannotHaveNum(cell(X,Y),M) ) ) ) )).
+
+fof(basicRule2,axiom,(
+    ? [X,Y,N] :
+      ( ( isNum(X) & isNum(Y) & isNum(N)
+        & ( ! [M] :
+              ( ( isNum(M) & M != N )
+             => cannotHaveNum(cell(X,Y),M) ) ) )
+     => hasNum(cell(X,Y),N) ) )).
